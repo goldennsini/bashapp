@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Festa – celebrate together (demo)</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1f1530;--paper:#fbf8ff;--card:#fff;--line:#e8e0f3;--mute:#6d6280;--gold:#f4b63f;--berry:#c2185b;--mint:#127a58;--soft:#f1eafb;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#f4eefc;--paper:#150d22;--card:#211632;--line:#37284d;--mute:#a99dc0;--soft:#2b1d40;--mint:#4fd1a1;color-scheme:dark}}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:Figtree,system-ui,sans-serif;background:var(--paper);color:var(--ink);display:flex;justify-content:center}
+#app{width:100%;max-width:440px;height:100%;display:flex;flex-direction:column;position:relative;background:var(--paper);padding-top:env(safe-area-inset-top,0px)}
+h1,h2,h3{font-family:'Bricolage Grotesque',Figtree,sans-serif;line-height:1.15}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px}
+.logo{font-family:'Bricolage Grotesque';font-weight:800;font-size:24px;color:var(--berry)}
+main{flex:1;overflow-y:auto;padding:4px 18px 24px}
+nav{display:flex;border-top:1px solid var(--line);background:var(--card);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;border:0;padding:10px 0 9px;font:500 12px Figtree;color:var(--mute);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button[aria-current=page]{color:var(--berry);font-weight:700}
+nav svg{width:22px;height:22px}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:14px;padding:13px 18px;font-weight:700;cursor:pointer;width:100%}
+.btn.gold{background:var(--gold);color:#1f1530}.btn.ghost{background:var(--soft);color:var(--ink)}.btn.sm{width:auto;padding:8px 14px;font-size:14px}
+:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
+.icon{background:var(--soft);border:0;border-radius:50%;width:40px;height:40px;cursor:pointer;position:relative}
+.dot{position:absolute;top:6px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--berry)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin:12px 0}
+.hero{background:linear-gradient(135deg,#3a1d5c,#c2185b);color:#fff;border-radius:24px;padding:20px;margin:8px 0}
+.hero h2{font-size:26px;margin:6px 0 4px}.hero p{opacity:.9;font-size:14px}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--soft)}
+.tag.ok{background:#d6f5e8;color:#0b5a40}.tag.warn{background:#fff0c9;color:#6b4a00}.tag.demo{background:#ffe3ee;color:#8a0f43}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between}.muted{color:var(--mute);font-size:14px}
+.av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;flex:none}
+.bar{height:10px;border-radius:9px;background:var(--soft);overflow:hidden;margin:10px 0 6px}.bar i{display:block;height:100%;background:var(--gold)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:6px 0}.chip{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px 14px;cursor:pointer;white-space:nowrap}.chip[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{background:var(--soft);border-radius:14px;padding:10px}.stat b{font-size:20px;display:block}
+label{display:block;font-weight:700;font-size:14px;margin:12px 0 5px}
+input,select,textarea{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
+.err{color:#b3261e;font-size:13px;margin-top:4px}
+#scrim{position:absolute;inset:0;background:rgba(20,10,35,.55);display:none;align-items:flex-end;z-index:5}
+#sheet{background:var(--paper);width:100%;max-height:88%;overflow-y:auto;border-radius:24px 24px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px))}
+#toast{position:absolute;left:18px;right:18px;bottom:84px;background:var(--ink);color:var(--paper);padding:12px 16px;border-radius:14px;display:none;z-index:9;font-size:14px}
+.step{display:flex;gap:10px;padding:7px 0;align-items:flex-start;font-size:14px;color:var(--mute)}.step b{color:var(--ink)}.step.done{color:var(--mint)}
+.step span{width:20px;height:20px;border-radius:50%;border:2px solid currentColor;flex:none;display:grid;place-items:center;font-size:11px}
+.banner{font-size:12px;text-align:center;padding:6px;background:#ffe3ee;color:#8a0f43}
+@media(prefers-reduced-motion:no-preference){#sheet{animation:up .22s ease-out}@keyframes up{from{transform:translateY(40px);opacity:.6}}}
+</style></head><body>
+<div id="app">
+<div class="banner">Demo build · sample data · no real payments, orders or notifications</div>
+<header><span class="logo">festa</span><div class="row"><button class="icon" id="bell" aria-label="Notifications">🔔<span class="dot"></span></button></div></header>
+<main id="main" tabindex="-1"></main>
+<nav id="nav"></nav>
+<div id="scrim"><div id="sheet" role="dialog" aria-modal="true"></div></div>
+<div id="toast" role="status"></div>
+</div>
+<script>
+const NAIRA=n=>'₦'+n.toLocaleString('en-NG');
+const S={onb:0,apps:[{n:'Cake Haven',st:'Under review'},{n:'Lagos Lens',st:'Submitted'}],audit:[],vd:{},vs:1,rpDone:false,tab:'home',view:null,
+ me:{name:'Efe Daniels',plan:'Community'},
+ people:{amara:{n:'Amara Okoye',c:'#c2185b',bday:'Turns 30 in 4 days',vis:'Friends only',wish:['Silk scarf','Scented candle set','Spa day voucher'],bio:'Designer, tea lover, Warri born.'},
+  tunde:{n:'Tunde Bello',c:'#127a58',bday:'Nov 2',vis:'Public',wish:['Football boots'],bio:'Weekend cyclist.'},
+  ngozi:{n:'Ngozi Eze',c:'#7b4bb7',bday:'Nov 19',vis:'Friends only',wish:['Cookbook','Plant pot'],bio:'Book club host.'}},
+ rooms:[{id:1,title:"Amara's 30th",who:'amara',goal:150000,status:'Open',deadline:'Oct 21',invited:12,accepted:7,greetings:5,contribs:[{n:'Tunde B.',a:20000,credit:true},{n:'Anonymous',a:50000,credit:false},{n:'Ngozi E.',a:22000,credit:true}],gift:'Spa day + flowers',msgs:['Happy 30th, Amara! 🎉','Can’t wait for the surprise']}],
+ orders:[],
+ vendors:[
+  {id:1,n:'Warri Blooms',cat:'Flowers',area:'Warri',p:18000,item:'Rose & lily bouquet',r:4.8,orders:126,fee:1500},
+  {id:2,n:'Delta Cakes',cat:'Cakes',area:'Warri',p:25000,item:'Custom 2-tier cake',r:4.6,orders:84,fee:2000},
+  {id:3,n:'Giftbox Hub',cat:'Gift boxes',area:'Effurun',p:35000,item:'Luxury pamper box',r:4.9,orders:59,fee:2500},
+  {id:4,n:'Sapele Spa',cat:'Experiences',area:'Sapele',p:45000,item:'Couples spa session',r:4.7,orders:41,fee:0}],
+ f:{cat:'All',budget:50000,area:'All'},
+ cal:[['Oct 21','Amara Okoye','Birthday'],['Nov 2','Tunde Bello','Birthday'],['Nov 19','Ngozi Eze','Birthday'],['Dec 3','Alumni Circle','Reunion']],
+ feed:[{u:'tunde',t:'Counting down to Amara’s big 3-0! Join the room 🎈',l:12,liked:false},{u:'ngozi',t:'Book club turns 2 on Saturday. Cake duties assigned.',l:8,liked:false}]};
+const $=s=>document.querySelector(s);
+const ic={home:'M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z',discover:'M12 3a9 9 0 100 18 9 9 0 000-18zm3.5 5.5l-2 5-5 2 2-5z',gifts:'M3 9h18v4H3zM5 13h14v8H5zM12 9v12M12 9c-3 0-5-4-2-4s2 4 2 4zm0 0c3 0 5-4 2-4s-2 4-2 4z',calendar:'M4 6h16v14H4zM4 10h16M8 3v4m8-4v4',profile:'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21c0-4 4-6 8-6s8 2 8 6'};
+const tabs=['home','discover','gifts','calendar','profile'];
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2600)}
+function sheet(html){$('#sheet').innerHTML=html;$('#scrim').style.display='flex';$('#sheet').querySelector('input,button,select')?.focus()}
+function close(){$('#scrim').style.display='none'}
+$('#scrim').onclick=e=>{if(e.target.id==='scrim')close()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+const av=k=>`<div class="av" style="background:${S.people[k].c}">${S.people[k].n[0]}</div>`;
+const raised=r=>r.contribs.reduce((s,c)=>s+c.a,0);
+function go(t,v){S.tab=t;S.view=v||null;render()}
+function render(){if(S.onb<3){$('#nav').innerHTML='';const m=$('#main');m.innerHTML=ONB[S.onb]();m.scrollTop=0;return}
+ $('#nav').innerHTML=tabs.map(t=>`<button aria-current="${S.tab===t?'page':'false'}" onclick="go('${t}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="${ic[t]}"/></svg>${t[0].toUpperCase()+t.slice(1)}</button>`).join('');
+ const m=$('#main');m.innerHTML=S.view?VIEWS[S.view.n](S.view.a):VIEWS[S.tab]();m.scrollTop=0}
+const back=(t)=>`<button class="btn ghost sm" onclick="go('${t}')">‹ Back</button>`;
+const VIEWS={
+home(){const r=S.rooms[0],p=S.people.amara;return `
+<div class="hero"><span class="tag" style="background:#ffffff33;color:#fff">Birthday in 4 days</span><h2>${p.n} turns 30</h2><p>${S.rooms.length?'A Surprise Room is open — '+NAIRA(raised(r))+' of '+NAIRA(r.goal)+' raised.':'Start a Surprise Room for her.'}</p>
+<div class="row" style="margin-top:14px"><button class="btn gold sm" onclick="go('gifts',{n:'room',a:1})">Open room</button><button class="btn sm" style="background:#ffffff33" onclick="go('home',{n:'profile',a:'amara'})">View profile</button></div></div>
+<h3 style="margin:18px 0 4px">Community</h3>
+${S.feed.map((f,i)=>`<div class="card"><div class="row" style="justify-content:flex-start">${av(f.u)}<div><b>${S.people[f.u].n}</b><div class="muted">Friends</div></div></div><p style="margin:10px 0">${f.t}</p><div class="row"><button class="chip" aria-pressed="${f.liked}" onclick="like(${i})">🎉 ${f.l+(f.liked?1:0)}</button><button class="chip" onclick="reportPost()">Report</button></div></div>`).join('')}`},
+profile(a){if(a){const p=S.people[a];return `${back('home')}<div class="card" style="text-align:center">${'<div class="av" style="background:'+p.c+';margin:0 auto 8px;width:64px;height:64px;font-size:26px">'+p.n[0]+'</div>'}<h2>${p.n}</h2><p class="muted">${p.bio}</p><p style="margin-top:8px"><span class="tag">🎂 ${p.bday}</span> <span class="tag">${p.vis}</span></p></div><h3>Wishlist</h3>${p.wish.map(w=>`<div class="card row"><span>${w}</span><button class="btn ghost sm" onclick="go('discover')">Find</button></div>`).join('')}<button class="btn" onclick="go('gifts',{n:'room',a:1})">Join her Surprise Room</button>`}
+ return `<div class="card" style="text-align:center"><div class="av" style="background:#3a1d5c;margin:0 auto 8px;width:64px;height:64px;font-size:26px">E</div><h2>${S.me.name}</h2><span class="tag">${S.me.plan} plan</span></div>
+ <button class="btn" onclick="plans()">Compare plans</button>
+ <div class="card"><b>Birthday visibility</b><select id="vis" onchange="toast('Visibility set to '+this.value)"><option>Friends only</option><option>Public</option><option>Private</option></select></div>
+ <div class="card"><b>Workspaces</b><p class="muted" style="margin:6px 0 10px">Demo roles. In production the backend decides what you can open.</p><button class="btn ghost" onclick="go('profile',{n:'vendor'})">Vendor portal</button><button class="btn ghost" style="margin-top:8px" onclick="go('profile',{n:'admin'})">Admin console</button><button class="btn ghost" style="margin-top:8px" onclick="S.onb=0;render()">Sign out</button></div>`},
+discover(){const v=S.vendors.filter(x=>(S.f.cat==='All'||x.cat===S.f.cat)&&x.p<=S.f.budget&&(S.f.area==='All'||x.area===S.f.area));
+ return `<h2>Trusted local vendors</h2><div class="chips">${['All','Flowers','Cakes','Gift boxes','Experiences'].map(c=>`<button class="chip" aria-pressed="${S.f.cat===c}" onclick="S.f.cat='${c}';render()">${c}</button>`).join('')}</div>
+ <label for="ar">Area</label><select id="ar" onchange="S.f.area=this.value;render()">${['All','Warri','Effurun','Sapele'].map(a=>`<option ${S.f.area===a?'selected':''}>${a}</option>`).join('')}</select>
+ <label for="bg">Budget up to ${NAIRA(S.f.budget)}</label><input id="bg" type="range" min="10000" max="60000" step="5000" value="${S.f.budget}" oninput="S.f.budget=+this.value;render();$('#bg').focus()">
+ ${v.length?v.map(x=>`<div class="card"><div class="row"><b>${x.n}</b><span class="tag ok">Verified (sample)</span></div><p>${x.item} · <b>${NAIRA(x.p)}</b></p><p class="muted">${x.area} · delivery ${x.fee?NAIRA(x.fee):'free'} · ★${x.r} from ${x.orders} completed orders</p><button class="btn gold sm" style="margin-top:10px" onclick="checkout(${x.id})">Gift this</button></div>`).join(''):'<div class="card"><b>No vendors match.</b><p class="muted">Raise your budget or choose another area.</p></div>'}`},
+gifts(){return `<div class="row"><h2>Surprise Rooms</h2><button class="btn sm" style="width:auto" onclick="newRoom()">+ New</button></div>
+ ${S.rooms.map(r=>`<div class="card" style="cursor:pointer" onclick="go('gifts',{n:'room',a:${r.id}})"><div class="row"><b>${r.title}</b><span class="tag warn">${r.status}</span></div><div class="bar"><i style="width:${Math.min(100,raised(r)/r.goal*100)}%"></i></div><div class="muted">${NAIRA(raised(r))} of ${NAIRA(r.goal)} · ends ${r.deadline}</div></div>`).join('')}
+ <h2 style="margin-top:20px">My orders</h2>${S.orders.length?S.orders.map((o,i)=>`<div class="card" style="cursor:pointer" onclick="go('gifts',{n:'order',a:${i}})"><div class="row"><b>${o.item}</b><span class="tag">${O_ST[o.s]}</span></div><p class="muted">${o.vendor} · ${NAIRA(o.total)}</p></div>`).join(''):'<div class="card muted">No orders yet. Browse Discover to send a gift.</div>'}`},
+room(id){const r=S.rooms.find(x=>x.id==id),p=S.people[r.who],t=raised(r),named=r.contribs.filter(c=>c.credit).length;return `${back('gifts')}
+ <div class="hero"><span class="tag" style="background:#ffffff33;color:#fff">${r.status}</span><h2>${r.title}</h2><p>For ${p.n} · deadline ${r.deadline}</p><div class="bar"><i style="width:${Math.min(100,t/r.goal*100)}%"></i></div><b>${NAIRA(t)}</b> of ${NAIRA(r.goal)} <span class="tag demo">simulated</span></div>
+ <div class="grid4"><div class="stat"><b>${r.invited}</b>Invited</div><div class="stat"><b>${r.accepted}</b>Accepted</div><div class="stat"><b>${r.greetings}</b>Greetings</div><div class="stat"><b>${r.contribs.length}</b>Verified contributors</div></div>
+ <div class="card"><b>Selected gift</b><p>${r.gift}</p></div>
+ <div class="row" style="gap:8px"><button class="btn gold" onclick="contribute(${id})">Contribute</button><button class="btn ghost" onclick="greet(${id})">Group greeting</button></div>
+ <div class="card"><b>Contributions</b><p class="muted">Amounts are visible only to you and the organizer.</p>${r.contribs.map(c=>`<div class="row" style="padding:6px 0"><span>${c.credit?c.n:'Hidden contributor'}</span><span>${NAIRA(c.a)}</span></div>`).join('')}</div>
+ <div class="card"><b>Messages</b>${r.msgs.map(m=>`<p style="margin-top:6px">${m}</p>`).join('')}</div>
+ <p class="muted">${named} contributors agreed to be named. Non-contributors are never listed.</p>`},
+order(i){const o=S.orders[i];return `${back('gifts')}<div class="card"><div class="row"><h3>${o.item}</h3><span class="tag demo">simulated</span></div><p class="muted">${o.vendor} · ${NAIRA(o.total)} · Ref ${o.ref}</p>
+ ${O_ST.map((s,k)=>`<div class="step ${k<=o.s?'done':''}"><span>${k<=o.s?'✓':''}</span><div><b>${s}</b>${k===o.s&&k<4?'<div>Next action: '+O_WHO[k]+'</div>':''}</div></div>`).join('')}</div>
+ ${o.s<4?`<button class="btn" onclick="S.orders[${i}].s++;render();toast('Status: '+O_ST[S.orders[${i}].s])">Advance status (demo)</button><button class="btn ghost" style="margin-top:8px" onclick="cancelOrder(${i})">Request cancellation</button>`:''}`},
+calendar(){return `<h2>Celebration calendar</h2>${S.cal.map(c=>`<div class="card row"><div><b>${c[1]}</b><div class="muted">${c[2]}</div></div><span class="tag">${c[0]}</span></div>`).join('')}<button class="btn ghost" onclick="toast('Reminder set for 3 days before each occasion')">Remind me for all</button>`}};
+const E=/^[^@\s]+@[^@\s]+\.[^@\s]+$/,ERR=()=>'<div class="err" id="em" role="alert"></div>';
+const ONB={0:()=>`<div class="hero" style="margin-top:30px"><h1 style="font-size:34px;color:#f4b63f">festa</h1><h2>Celebrate people, together.</h2><p>Birthdays, group gifts and trusted local vendors in one place.</p></div><button class="btn" onclick="S.onb=1;render()">Create account</button><button class="btn ghost" style="margin-top:8px" onclick="S.onb=.5;render()">I have an account</button>`,
+.5:()=>`<h2>Welcome back</h2><label for="le">Email</label><input id="le" type="email" autocomplete="email"><label for="lp">Password</label><input id="lp" type="password">${ERR()}<button class="btn" style="margin-top:12px" onclick="login()">Log in</button><button class="btn ghost" style="margin-top:8px" onclick="forgot()">Forgot password?</button>`,
+1:()=>`<h2>Create your account</h2><label for="rn">Full name</label><input id="rn" autocomplete="name"><label for="re">Email</label><input id="re" type="email"><label for="rph">Phone (optional)</label><input id="rph" type="tel" placeholder="+234…"><label for="rp">Password</label><input id="rp" type="password" autocomplete="new-password"><label style="font-weight:500"><input type="checkbox" id="rc" style="width:auto"> I accept the terms and privacy policy</label>${ERR()}<button class="btn" style="margin-top:12px" onclick="reg()">Continue</button>`,
+1.5:()=>`<h2>Verify your email</h2><p class="muted">Demo: enter code 123456. In production a one-time code is sent by the backend.</p><label for="vcode">6-digit code</label><input id="vcode" inputmode="numeric" maxlength="6">${ERR()}<button class="btn" style="margin-top:12px" onclick="if($('#vcode').value==='123456'){S.onb=2;render()}else $('#em').textContent='That code doesn’t match. Check it and try again.'">Verify</button><button class="btn ghost" style="margin-top:8px" onclick="toast('New code sent (demo)')">Resend code</button>`,
+2:()=>`<h2>Set up your profile</h2><label for="sb">Birthday (optional)</label><input id="sb" type="date"><label for="sv">Who can see your birthday</label><select id="sv"><option>Friends only</option><option>Public</option><option>Private</option></select><label for="sc">City</label><input id="sc" value="Warri"><label>Interests</label><div class="chips" style="flex-wrap:wrap">${['Music','Food','Travel','Books','Sports','Fashion'].map(i=>`<button type="button" class="chip" aria-pressed="false" onclick="this.setAttribute('aria-pressed',this.getAttribute('aria-pressed')!=='true')">${i}</button>`).join('')}</div><label style="font-weight:500"><input type="checkbox" style="width:auto" checked> Remind me about friends’ birthdays</label><button class="btn" style="margin-top:14px" onclick="S.onb=3;render();toast('Profile ready. Welcome, '+S.me.name.split(' ')[0]+'!')">Finish setup</button>`};
+function reg(){const n=$('#rn').value.trim(),e=$('#re').value.trim(),p=$('#rp').value;let m='';if(!n)m='Enter your name.';else if(!E.test(e))m='Enter a valid email address.';else if(p.length<8||!/\d/.test(p))m='Password needs 8+ characters and a number.';else if(!$('#rc').checked)m='Accept the terms and privacy policy to continue.';if(m){$('#em').textContent=m;return}S.me.name=n;S.onb=1.5;render()}
+function login(){const e=$('#le').value.trim();if(!E.test(e)||!$('#lp').value){$('#em').textContent='Enter your email and password.';return}S.onb=3;render()}
+function forgot(){sheet(`<h3>Reset password</h3><label for="fe">Email</label><input id="fe" type="email"><div class="err" id="fm"></div><button class="btn" style="margin-top:12px" onclick="if(E.test($('#fe').value)){close();toast('If that account exists, a reset link is on its way (demo)')}else $('#fm').textContent='Enter a valid email.'">Send reset link</button>`)}
+VIEWS.vendor=()=>{const a=S.apps.find(x=>x.mine),s=S.vs,d=S.vd;
+ if(a)return `${back('profile')}<h2>${a.n}</h2><p><span class="tag ${a.st==='Approved'?'ok':'warn'}">${a.st}</span></p>`+(a.st==='Approved'?`<h3 style="margin-top:16px">Incoming orders</h3>${S.orders.length?S.orders.map((o,i)=>`<div class="card"><b>${o.item}</b><p class="muted">${O_ST[o.s]} · ${NAIRA(o.total)}</p>${o.s===0?`<button class="btn gold sm" onclick="S.orders[${i}].s=1;render();toast('Order accepted')">Accept</button>`:''}</div>`).join(''):'<div class="card muted">No orders yet. Place one from Discover to see it here.</div>'}`:`<div class="card muted">You can’t publish listings or accept paid orders until the review team approves this application. Open the Admin console to approve it.</div>`);
+ const B={1:`<label for="vn">Trading name</label><input id="vn" value="${d.n||''}"><label for="vc">Category</label><select id="vc"><option>Flowers</option><option>Cakes</option><option>Gift boxes</option><option>Experiences</option></select><label for="vr">Authorized representative</label><input id="vr" value="${d.r||''}">`,
+ 2:`<label for="vl">City</label><input id="vl" value="${d.l||''}"><label for="vt">Business type</label><select id="vt"><option>Storefront</option><option>Online only</option><option>Home-based</option></select><label for="vk">Delivery radius (km)</label><input id="vk" type="number" value="${d.k||''}">`,
+ 3:`<label style="font-weight:500"><input type="checkbox" id="vdoc" style="width:auto"> Business registration attached (demo)</label><label style="font-weight:500"><input type="checkbox" id="vid" style="width:auto"> Representative ID attached (demo)</label><label for="vp">First product</label><input id="vp"><label for="vpr">Price (₦)</label><input id="vpr" type="number">`,
+ 4:`<div class="card"><b>${d.n}</b><p class="muted">${d.c} · ${d.l} · ${d.t} · ${d.k} km</p><p>${d.p} · ${NAIRA(d.pr)}</p></div><label style="font-weight:500"><input type="checkbox" id="vdc" style="width:auto"> I declare the information is accurate</label>`};
+ return `${back('profile')}<h2>Register your business</h2><p class="muted">Step ${s} of 4: ${['Identity','Location','Verification and catalogue','Review'][s-1]}</p>${B[s]}${ERR()}<button class="btn" style="margin-top:12px" onclick="vnext()">${s===4?'Submit application':'Next'}</button>${s>1?`<button class="btn ghost" style="margin-top:8px" onclick="S.vs--;render()">Previous</button>`:''}`};
+function vnext(){const s=S.vs,g=i=>$('#'+i)?$('#'+i).value.trim():'',c=i=>$('#'+i)&&$('#'+i).checked,d=S.vd;let m='';
+ if(s===1){d.n=g('vn');d.c=g('vc');d.r=g('vr');if(!d.n||!d.r)m='Enter the business name and representative.'}
+ if(s===2){d.l=g('vl');d.t=g('vt');d.k=g('vk');if(!d.l||!(+d.k>0))m='Enter your city and a delivery radius above 0 km.'}
+ if(s===3){d.p=g('vp');d.pr=+g('vpr');if(!c('vdoc')||!c('vid'))m='Attach both verification documents.';else if(!d.p||!(d.pr>0))m='Add one product with a price.'}
+ if(s===4){if(!c('vdc'))m='Confirm the declaration to submit.';else{S.apps.unshift({n:d.n,st:'Submitted',mine:true});S.audit.unshift('Vendor application submitted: '+d.n);S.vs=1;toast('Application submitted for review');return render()}}
+ if(m){$('#em').textContent=m;return}S.vs++;render()}
+VIEWS.admin=()=>`${back('profile')}<h2>Admin console</h2><p class="muted"><span class="tag demo">Simulated stats</span> Role: super admin (demo)</p>
+<div class="grid4" style="margin:10px 0"><div class="stat"><b>1,284</b>Users</div><div class="stat"><b>${S.rooms.length}</b>Rooms</div><div class="stat"><b>${NAIRA(S.rooms.reduce((t,r)=>t+raised(r),0))}</b>Verified (sim.)</div><div class="stat"><b>${S.apps.filter(a=>a.st==='Submitted'||a.st==='Under review').length}</b>Vendor reviews</div></div>
+<h3>Vendor applications</h3>${S.apps.map((a,i)=>`<div class="card"><div class="row"><b>${a.n}</b><span class="tag ${a.st==='Approved'?'ok':'warn'}">${a.st}</span></div>${['Approved','Rejected'].includes(a.st)?'':`<div class="row" style="gap:6px;margin-top:8px"><button class="btn gold sm" onclick="decide(${i},'Approved')">Approve</button><button class="btn ghost sm" onclick="decide(${i},'Action required')">Ask for info</button><button class="btn ghost sm" onclick="decide(${i},'Rejected')">Reject</button></div>`}</div>`).join('')}
+<h3>Reports</h3>${S.rpDone?'<div class="card muted">No open reports.</div>':`<div class="card"><b>Spam post</b><p class="muted">Reported by 2 members</p><div class="row" style="gap:6px;margin-top:8px"><button class="btn ghost sm" onclick="closeReport('dismissed')">Dismiss</button><button class="btn gold sm" onclick="closeReport('removed')">Remove post</button></div></div>`}
+<h3>Transactions (simulated)</h3><div class="card">${S.rooms.flatMap(r=>r.contribs.map(c=>`<div class="row" style="padding:4px 0"><span>${r.title} · ${c.n}</span><span>${NAIRA(c.a)}</span></div>`)).join('')||'<span class="muted">None yet</span>'}<p class="muted" style="margin-top:8px">Balances can’t be edited here. Corrections need an audited refund or reversal.</p></div>
+<h3>Audit log</h3><div class="card">${S.audit.length?S.audit.map(a=>`<p class="muted">${a}</p>`).join(''):'<span class="muted">No actions yet</span>'}</div>`;
+function decide(i,st){const a=S.apps[i];sheet(`<h3>${st==='Approved'?'Approve':st==='Rejected'?'Reject':'Request more information from'} ${a.n}?</h3><p class="muted">This is recorded in the audit log.</p><button class="btn" onclick="S.apps[${i}].st='${st}';S.audit.unshift('${st}: ${a.n}');close();render();toast('${a.n}: ${st}')">Confirm</button><button class="btn ghost" style="margin-top:8px" onclick="close()">Cancel</button>`)}
+function closeReport(a){sheet(`<h3>Confirm: ${a==='removed'?'remove post':'dismiss report'}</h3><button class="btn" onclick="S.rpDone=true;S.audit.unshift('Report ${a}');close();render();toast('Report ${a}')">Confirm</button>`)}
+const O_ST=['Placed','Vendor accepted','Preparing','Out for delivery','Delivered'],O_WHO=['Vendor to accept','Vendor to prepare','Vendor to dispatch','Courier to deliver'];
+function like(i){S.feed[i].liked=!S.feed[i].liked;render()}
+function reportPost(){sheet(`<h3>Report this post</h3><label for="rr">Reason</label><select id="rr"><option>Spam</option><option>Harassment</option><option>Other</option></select><button class="btn" style="margin-top:14px" onclick="close();toast('Report sent to moderators (demo)')">Send report</button>`)}
+function contribute(id){sheet(`<h3>Contribute</h3><p class="muted"><span class="tag demo">Simulated</span> No money moves. In production only server-verified payments change totals.</p>
+ <label for="am">Amount (₦)</label><div class="chips">${[5000,10000,20000].map(a=>`<button class="chip" onclick="am.value=${a}">${NAIRA(a)}</button>`).join('')}</div><input id="am" type="number" inputmode="numeric" min="500"><div class="err" id="ae"></div>
+ <label><input type="checkbox" id="cr" style="width:auto" checked> Credit my name in the group greeting</label>
+ <button class="btn gold" style="margin-top:12px" onclick="doContrib(${id})">Confirm simulated contribution</button>`)}
+function doContrib(id){const a=+$('#am').value;if(!a||a<500){$('#ae').textContent='Enter at least ₦500.';return}
+ const r=S.rooms.find(x=>x.id==id);r.contribs.push({n:'Efe D.',a,credit:$('#cr').checked});r.accepted++;if(raised(r)>=r.goal)r.status='Goal reached';close();render();toast('Simulated contribution added')}
+function greet(id){const r=S.rooms.find(x=>x.id==id),n=r.contribs.filter(c=>c.credit).map(c=>c.n);
+ sheet(`<h3>Group greeting preview</h3><div class="card" style="background:var(--soft)"><p>Happy 30th, ${S.people[r.who].n.split(' ')[0]}! 🎂</p><p style="margin-top:8px">With love from ${n.join(', ')}${n.length?' and friends':'your friends'}.</p></div>
+ <p class="muted">Only people who contributed and agreed to be credited are named. Everyone else is included as “friends”.</p><button class="btn" style="margin-top:12px" onclick="close();toast('Greeting approved and scheduled (demo)')">Approve and schedule</button>`)}
+function newRoom(){sheet(`<h3>New Surprise Room</h3><label for="nt">Room title</label><input id="nt"><div class="err" id="e1"></div>
+ <label for="nb">Beneficiary</label><select id="nb">${Object.entries(S.people).map(([k,p])=>`<option value="${k}">${p.n}</option>`).join('')}</select>
+ <label for="ng">Goal (₦)</label><input id="ng" type="number" inputmode="numeric"><div class="err" id="e2"></div>
+ <label for="nd">Deadline</label><input id="nd" type="date"><div class="err" id="e3"></div>
+ <label><input type="checkbox" id="nk" style="width:auto"> I understand unmet goals and cancellations are refunded to contributors.</label><div class="err" id="e4"></div>
+ <button class="btn" style="margin-top:12px" onclick="saveRoom()">Review and create</button>`)}
+function saveRoom(){const t=$('#nt').value.trim(),g=+$('#ng').value,d=$('#nd').value;let ok=true;
+ const set=(i,m)=>{$(i).textContent=m;if(m)ok=false};
+ set('#e1',t?'':'Give the room a title.');set('#e2',g>=5000?'':'Goal must be at least ₦5,000.');set('#e3',d?'':'Choose a deadline.');set('#e4',$('#nk').checked?'':'Please acknowledge the refund policy.');
+ if(!ok)return;const who=$('#nb').value;
+ sheet(`<h3>Confirm room</h3><p><b>${t}</b> for ${S.people[who].n}<br>Goal ${NAIRA(g)} · deadline ${d}</p><button class="btn" style="margin-top:12px" onclick="makeRoom('${t.replace(/[^\w ’'.-]/g,'')}','${who}',${g},'${d}')">Create room</button>`)}
+function makeRoom(t,who,g,d){const id=S.rooms.length+1;S.rooms.push({id,title:t,who,goal:g,status:'Open',deadline:d,invited:0,accepted:1,greetings:0,contribs:[],gift:'Not chosen yet',msgs:[]});close();go('gifts',{n:'room',a:id});toast('Room created. Invite friends next.')}
+function checkout(id){const v=S.vendors.find(x=>x.id===id);sheet(`<h3>Order summary</h3><div class="card"><b>${v.item}</b><p class="muted">${v.n} · ${v.area}</p><div class="row"><span>Item</span><span>${NAIRA(v.p)}</span></div><div class="row"><span>Delivery</span><span>${v.fee?NAIRA(v.fee):'Free'}</span></div><div class="row"><b>Total</b><b>${NAIRA(v.p+v.fee)}</b></div></div>
+ <p class="muted">Cancellation: free before the vendor accepts. Refunds follow the vendor policy. <span class="tag demo">No payment taken</span></p><button class="btn gold" onclick="placeOrder(${id})">Place simulated order</button>`)}
+function placeOrder(id){const v=S.vendors.find(x=>x.id===id);S.orders.push({item:v.item,vendor:v.n,total:v.p+v.fee,s:0,ref:'DEMO-'+(1000+S.orders.length)});close();go('gifts',{n:'order',a:S.orders.length-1});toast('Simulated order created')}
+function cancelOrder(i){sheet(`<h3>Cancel this order?</h3><p class="muted">The vendor will be asked to confirm.</p><button class="btn" onclick="S.orders.splice(${i},1);close();go('gifts');toast('Order cancelled (demo)')">Yes, cancel</button><button class="btn ghost" style="margin-top:8px" onclick="close()">Keep order</button>`)}
+function plans(){sheet(`<h3>Membership</h3><p class="muted">Prices are configurable and not final. No charge is made in this demo.</p>
+ ${[['Community','Free','Profile, wishlists, calendar, join rooms'],['Premium','Price TBD','Themed celebration pages, planning tools, partner perks'],['Organizations','Price TBD','Private circles, shared calendar, admin and reports']].map(p=>`<div class="card"><div class="row"><b>${p[0]}</b><span class="tag">${p[1]}</span></div><p class="muted">${p[2]}</p>${p[0]!=='Community'?`<button class="btn ghost sm" style="margin-top:8px" onclick="close();toast('${p[0]} trial started (demo, no charge)')">Try ${p[0]}</button>`:''}</div>`).join('')}`)}
+$('#bell').onclick=()=>sheet(`<h3>Notifications</h3>${['Amara’s birthday is in 4 days','Tunde accepted your room invite','Your simulated order moved forward'].map(n=>`<div class="card">${n}</div>`).join('')}<button class="btn ghost" onclick="close()">Close</button>`);
+render();
+</script></body></html>
